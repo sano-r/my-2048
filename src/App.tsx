@@ -1,7 +1,9 @@
+import Game2048 from "./features/Game2048";
+
 function App() {
   return (
     <>
-      <h1 className="font-bold text-2xl">Hello React</h1>
+      <Game2048 />
     </>
   );
 }
