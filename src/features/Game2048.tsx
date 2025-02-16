@@ -9,9 +9,24 @@ const initialGrid = () =>
     .fill(null)
     .map(() => Array(size).fill(0));
 
+const tileColors: { [key: number]: string } = {
+  0: "bg-gray-700",
+  2: "bg-gray-400",
+  4: "bg-yellow-500",
+  8: "bg-orange-500",
+  16: "bg-orange-400",
+  32: "bg-red-500",
+  64: "bg-red-400",
+  128: "bg-green-500",
+  256: "bg-green-400",
+  512: "bg-blue-500",
+  1024: "bg-blue-400",
+  2048: "bg-purple-500",
+};
+
 const Game2048 = () => {
   const [grid, setGrid] = useState(initialGrid);
-  const [tileKey, setTileKey] = useState(0); // タイルごとのキー管理用
+  const [tileKey, setTileKey] = useState(0);
   const [isGameOverState, setIsGameOverState] = useState(false);
 
   useEffect(() => {
@@ -23,7 +38,7 @@ const Game2048 = () => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (isGameOverState) return; // ゲームオーバー時は操作を受け付けない
+      if (isGameOverState) return;
       switch (event.key) {
         case "ArrowUp":
           moveTiles("up");
@@ -46,7 +61,7 @@ const Game2048 = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [grid, isGameOverState]); // grid の状態が変わるたびにリスナーを更新
+  }, [grid, isGameOverState]);
 
   const addRandomTile = (board: number[][]): number[][] => {
     let emptyCells: [number, number][] = [];
@@ -115,13 +130,12 @@ const Game2048 = () => {
   const isGameOver = (board: number[][]): boolean => {
     for (let r = 0; r < size; r++) {
       for (let c = 0; c < size; c++) {
-        if (board[r][c] === 0) return false; // 空のセルがあればゲームオーバーではない
-        // 横、縦で隣接したタイルが同じ場合も動かせるのでゲームオーバーではない
+        if (board[r][c] === 0) return false;
         if (c < size - 1 && board[r][c] === board[r][c + 1]) return false;
         if (r < size - 1 && board[r][c] === board[r + 1][c]) return false;
       }
     }
-    return true; // すべてのセルが埋まっていて、隣接したタイルが結合できない場合はゲームオーバー
+    return true;
   };
 
   const resetGame = () => {
@@ -130,7 +144,7 @@ const Game2048 = () => {
     newGrid = addRandomTile(newGrid);
     setGrid(newGrid);
     setTileKey(0);
-    setIsGameOverState(false); // リセット時にゲームオーバー解除
+    setIsGameOverState(false);
   };
 
   return (
@@ -149,7 +163,7 @@ const Game2048 = () => {
           <motion.div
             key={`${num}-${i}-${tileKey}`}
             className={`w-20 h-20 flex items-center justify-center font-bold text-xl rounded-lg ${
-              num === 0 ? "bg-gray-700" : "bg-yellow-500"
+              tileColors[num] || "bg-gray-700"
             }`}
             layout
             initial={{ scale: num === 0 ? 1 : 0 }}
@@ -160,7 +174,7 @@ const Game2048 = () => {
           </motion.div>
         ))}
       </div>
-      <Button variant="green" onClick={resetGame} disabled={isGameOverState}>
+      <Button variant="green" onClick={resetGame}>
         Reset
       </Button>
     </div>
